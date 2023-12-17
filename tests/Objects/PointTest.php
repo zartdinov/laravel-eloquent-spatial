@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Enums\Srid;
 use MatanYadaev\EloquentSpatial\Objects\Geometry;
 use MatanYadaev\EloquentSpatial\Objects\Point;
@@ -86,7 +87,7 @@ it('generates point WKT', function (): void {
 it('creates point from WKB', function (): void {
   $point = new Point(0, 180);
 
-  $pointFromWkb = Point::fromWkb($point->toWkb());
+  $pointFromWkb = Point::fromWkb($point->toWkb(), DB::connection());
 
   expect($pointFromWkb)->toEqual($point);
 });
@@ -94,7 +95,7 @@ it('creates point from WKB', function (): void {
 it('creates point with SRID from WKB', function (): void {
   $point = new Point(0, 180, Srid::WGS84->value);
 
-  $pointFromWkb = Point::fromWkb($point->toWkb());
+  $pointFromWkb = Point::fromWkb($point->toWkb(), DB::connection());
 
   expect($pointFromWkb)->toEqual($point);
 });

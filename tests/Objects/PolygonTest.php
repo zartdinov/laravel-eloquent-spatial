@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Enums\Srid;
 use MatanYadaev\EloquentSpatial\Objects\Geometry;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
@@ -171,7 +172,7 @@ it('creates polygon from WKB', function (): void {
     ]),
   ]);
 
-  $polygonFromWkb = Polygon::fromWkb($polygon->toWkb());
+  $polygonFromWkb = Polygon::fromWkb($polygon->toWkb(), DB::connection());
 
   expect($polygonFromWkb)->toEqual($polygon);
 });
@@ -187,7 +188,7 @@ it('creates polygon with SRID from WKB', function (): void {
     ]),
   ], Srid::WGS84->value);
 
-  $polygonFromWkb = Polygon::fromWkb($polygon->toWkb());
+  $polygonFromWkb = Polygon::fromWkb($polygon->toWkb(), DB::connection());
 
   expect($polygonFromWkb)->toEqual($polygon);
 });

@@ -11,6 +11,8 @@ use Illuminate\Contracts\Database\Query\Expression as ExpressionContract;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\MySqlConnection;
+use Illuminate\Database\PostgresConnection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Traits\Macroable;
 use InvalidArgumentException;
@@ -69,16 +71,20 @@ abstract class Geometry implements Castable, Arrayable, Jsonable, JsonSerializab
    *
    * @throws InvalidArgumentException
    */
-  public static function fromWkb(string $wkb): static
+  public static function fromWkb(string $wkb, ConnectionInterface $connection): static
   {
-    $srid = substr($wkb, 0, 4);
-    // @phpstan-ignore-next-line
-    $srid = unpack('L', $srid)[1];
+    if ($connection instanceof PostgresConnection) {
+      $geometry = Factory::parse($wkb);
+    } else {
+      $srid = substr($wkb, 0, 4);
+      // @phpstan-ignore-next-line
+      $srid = unpack('L', $srid)[1];
 
-    $wkb = substr($wkb, 4);
+      $wkb = substr($wkb, 4);
 
-    $geometry = Factory::parse($wkb);
-    $geometry->srid = $srid;
+      $geometry = Factory::parse($wkb);
+      $geometry->srid = $srid;
+    }
 
     if (! ($geometry instanceof static)) {
       throw new InvalidArgumentException(

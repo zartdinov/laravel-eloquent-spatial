@@ -6,6 +6,7 @@ namespace MatanYadaev\EloquentSpatial;
 
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\MySqlConnection;
+use Illuminate\Database\PostgresConnection;
 use PDO;
 
 class AxisOrder
@@ -16,6 +17,12 @@ class AxisOrder
 
   public function supported(ConnectionInterface $connection): bool
   {
+    if ($this->isPostgres($connection)) {
+      // @codeCoverageIgnoreStart
+      return false;
+      // @codeCoverageIgnoreEnd
+    }
+
     /** @var MySqlConnection $connection */
     if ($this->isMariaDb($connection)) {
       // @codeCoverageIgnoreStart
@@ -30,6 +37,11 @@ class AxisOrder
     }
 
     return true;
+  }
+
+  private function isPostgres(ConnectionInterface $connection): bool
+  {
+    return $connection instanceof PostgresConnection;
   }
 
   private function isMariaDb(MySqlConnection $connection): bool

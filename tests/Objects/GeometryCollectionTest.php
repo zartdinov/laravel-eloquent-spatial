@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Enums\Srid;
 use MatanYadaev\EloquentSpatial\Objects\Geometry;
 use MatanYadaev\EloquentSpatial\Objects\GeometryCollection;
@@ -221,7 +222,7 @@ it('creates geometry collection from WKB', function (): void {
     new Point(0, 180),
   ]);
 
-  $geometryCollectionFromWkb = GeometryCollection::fromWkb($geometryCollection->toWkb());
+  $geometryCollectionFromWkb = GeometryCollection::fromWkb($geometryCollection->toWkb(), DB::connection());
 
   expect($geometryCollectionFromWkb)->toEqual($geometryCollection);
 });
@@ -240,7 +241,7 @@ it('creates geometry collection with SRID from WKB', function (): void {
     new Point(0, 180),
   ], Srid::WGS84->value);
 
-  $geometryCollectionFromWkb = GeometryCollection::fromWkb($geometryCollection->toWkb());
+  $geometryCollectionFromWkb = GeometryCollection::fromWkb($geometryCollection->toWkb(), DB::connection());
 
   expect($geometryCollectionFromWkb)->toEqual($geometryCollection);
 });
